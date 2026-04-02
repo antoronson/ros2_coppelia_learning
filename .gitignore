@@ -57,3 +57,45 @@ ros2_ws/log/
 *.pyc
 .ipynb_checkpoints/
 
+# --- TwinCAT Visual Studio Solution Files ---
+.vs/
+*.suo
+*.user
+*.sln.docproperties
+
+# --- Compiled Binaries and Build Artifacts ---
+# Ignore the entire boot and compile folders
+**/_boot/
+**/_compile/
+**/_deployment/
+**/_Grading/
+
+# Ignore specific binary extensions
+*.tpy
+*.tpzip
+*.compileinfo
+*.bak
+*.tmp
+
+# --- Measurement and Scope Projects ---
+*.svd
+*.svdx
+*.vbi
+*.vbx
+
+# --- Simulation and Runtime Data ---
+*.visu
+*.pdm
+*.mbt
+*.vsm
+
+# --- User-Specific Configuration ---
+# These files store window positions and local path settings
+LineIDs.xml
+LineIDs.vue
+*.tsproj.bak
+*.xtsproj.bak
+
+# --- Logs and Diagnostics ---
+**/Logs/
+*.log

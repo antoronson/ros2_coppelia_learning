@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.16">
+  <DUT Name="ST_ConveyorOutputs" Id="{02611b3a-1aff-4d34-bee6-f9682efeb2d6}">
+    <Declaration><![CDATA[TYPE ST_ConveyorOutputs :
+STRUCT
+	bMoveConveyor	:BOOL;
+	bStopConveyor	:BOOL;
+	bEnableConveyor	:BOOL;
+	
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

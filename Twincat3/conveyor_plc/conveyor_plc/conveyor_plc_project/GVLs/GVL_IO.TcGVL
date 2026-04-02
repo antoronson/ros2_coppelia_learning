@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.16">
+  <GVL Name="GVL_IO" Id="{5434a5c5-3b0f-4915-a49e-0c80b0bb6641}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+VAR_GLOBAL
+	Conveyor_Inputs		:ST_ConveyorInputs;
+	Conveyor_Outputs	:ST_ConveyorOutputs;
+END_VAR]]></Declaration>
+  </GVL>
+</TcPlcObject>

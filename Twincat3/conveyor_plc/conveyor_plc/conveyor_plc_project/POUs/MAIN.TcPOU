@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.16">
+  <POU Name="MAIN" Id="{f6a867ed-f3fb-4c29-8585-1fbb6e585037}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MAIN
+VAR
+	fbConveyor	:FB_Conveyor;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[fbConveyor(stInput	:= GVL_IO.Conveyor_Inputs, stOutput=>GVL_IO.Conveyor_Outputs);
+]]></ST>
+    </Implementation>
+    <LineIds Name="MAIN">
+      <LineId Id="2" Count="0" />
+      <LineId Id="7" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

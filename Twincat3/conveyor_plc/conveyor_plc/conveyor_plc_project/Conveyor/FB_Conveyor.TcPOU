@@ -1,0 +1,153 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.16">
+  <POU Name="FB_Conveyor" Id="{d8956dc1-793f-4c9c-be4b-5c7e93e0da86}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Conveyor
+VAR_INPUT
+	stInput	:ST_ConveyorInputs;
+END_VAR
+VAR_OUTPUT
+	stOutput	:ST_ConveyorOutputs;
+END_VAR
+VAR
+	eActConveyorState	:E_ConveyorState	:= E_ConveyorState.INIT;
+	bPartDetected		:BOOL	:=FALSE;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[A_ProcessFlow();]]></ST>
+    </Implementation>
+    <Action Name="A_ProcessFlow" Id="{8534e87c-3222-459b-82b1-d9cf51637e16}">
+      <Implementation>
+        <ST><![CDATA[CASE eActConveyorState OF 
+	E_ConveyorState.INIT:
+		// When conveyor part is at the end of the conveyor stop it. robot will clear the part
+		IF M_PartDetectedAtEnd() THEN
+			eActConveyorState := E_ConveyorState.STOP;
+		END_IF
+		
+		// When part is not at the end, start the conveyor to move 
+		IF NOT M_PartDetectedAtEnd()  AND NOT stInput.bRobInSpace THEN
+			IF P_GetPart2Move THEN
+				eActConveyorState	:= E_ConveyorState.REQUEST_MOVE;
+			END_IF
+		END_IF
+	
+		
+		
+	E_ConveyorState.REQUEST_MOVE:
+		stOutput.bMoveConveyor := TRUE;
+		eActConveyorState	:= E_ConveyorState.MOVING;
+		
+		
+		
+	E_ConveyorState.MOVING:
+		IF P_GetConveyorMoving THEN
+			// DO Nothing. Wait here until Part is detected
+			
+		END_IF
+		IF M_PartDetectedAtEnd() THEN
+			eActConveyorState	:= E_ConveyorState.STOP;
+		END_IF
+		
+		
+		
+	E_ConveyorState.STOP:
+		stOutput.bMoveConveyor := FALSE;
+		IF NOT P_GetConveyorMoving THEN
+			// DO Nothing
+			eActConveyorState	:= E_ConveyorState.INIT;
+		ELSE
+			eActConveyorState	:= E_ConveyorState.ERROR;
+		END_IF
+		
+		
+		
+	E_ConveyorState.ERROR:
+		// TODO: Wait for Error Handling
+		
+END_CASE
+
+bPartDetected	:= M_PartDetectedAtEnd();]]></ST>
+      </Implementation>
+    </Action>
+    <Method Name="M_PartDetectedAtEnd" Id="{033389a7-cb82-4909-8ee7-94f6f4b7144c}">
+      <Declaration><![CDATA[METHOD M_PartDetectedAtEnd : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[M_PartDetectedAtEnd := stInput.bPartDetected;
+RETURN;]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="P_GetConveyorMoving" Id="{38eb1a51-4cc6-4443-87f3-9ada5fc322ca}">
+      <Declaration><![CDATA[PROPERTY P_GetConveyorMoving : BOOL]]></Declaration>
+      <Get Name="Get" Id="{88b9459f-a7e3-4b98-bad0-22c92405af84}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[stInput.bConveyorIsMoving := stOutput.bMoveConveyor;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="P_GetPart2Move" Id="{af88d269-f469-4ffb-afc7-9947117517bd}">
+      <Declaration><![CDATA[PROPERTY P_GetPart2Move : BOOL]]></Declaration>
+      <Get Name="Get" Id="{0bfb4706-9db3-4ce6-81eb-8f2e7bca6fe0}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[P_GetPart2Move := GVL_IO.Conveyor_Inputs.bPartAvailable2Move;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <LineIds Name="FB_Conveyor">
+      <LineId Id="9" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_Conveyor.A_ProcessFlow">
+      <LineId Id="1" Count="1" />
+      <LineId Id="13" Count="0" />
+      <LineId Id="22" Count="0" />
+      <LineId Id="15" Count="1" />
+      <LineId Id="23" Count="1" />
+      <LineId Id="17" Count="0" />
+      <LineId Id="51" Count="0" />
+      <LineId Id="18" Count="0" />
+      <LineId Id="52" Count="0" />
+      <LineId Id="19" Count="1" />
+      <LineId Id="42" Count="1" />
+      <LineId Id="4" Count="0" />
+      <LineId Id="21" Count="0" />
+      <LineId Id="12" Count="0" />
+      <LineId Id="39" Count="2" />
+      <LineId Id="5" Count="0" />
+      <LineId Id="8" Count="0" />
+      <LineId Id="25" Count="0" />
+      <LineId Id="27" Count="0" />
+      <LineId Id="26" Count="0" />
+      <LineId Id="28" Count="2" />
+      <LineId Id="44" Count="2" />
+      <LineId Id="9" Count="1" />
+      <LineId Id="31" Count="1" />
+      <LineId Id="34" Count="2" />
+      <LineId Id="33" Count="0" />
+      <LineId Id="47" Count="2" />
+      <LineId Id="11" Count="0" />
+      <LineId Id="37" Count="1" />
+      <LineId Id="3" Count="0" />
+      <LineId Id="54" Count="0" />
+      <LineId Id="53" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_Conveyor.M_PartDetectedAtEnd">
+      <LineId Id="5" Count="0" />
+      <LineId Id="9" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_Conveyor.P_GetConveyorMoving.Get">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_Conveyor.P_GetPart2Move.Get">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
