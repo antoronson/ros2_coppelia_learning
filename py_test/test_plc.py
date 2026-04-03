@@ -1,5 +1,4 @@
 import pytest
-from unittest.mock import MagicMock, patch
 import pyads
 from py_src.plc_connector import plc_connector
 from py_src.logger import PLCLogger
