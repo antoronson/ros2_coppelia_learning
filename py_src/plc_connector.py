@@ -3,7 +3,7 @@ import pyads
 
 class plc_connector:
     def __init__ (self, target_ams_id, target_port):
-        self.logger = PLCLogger()
+        self.logger = PLCLogger("PLC_CONN")
         self.logger.info("Logging PLC Connector")
         self.logger.info("------------------------------------")
         self.logger.info("Try connecting to PLC")
@@ -26,3 +26,17 @@ class plc_connector:
             self.logger.error(f"connecting pyads to twincat faces ads error {e}")
             return False
         
+    def read_variable(self, symbol_name, plc_type = pyads.PLCTYPE_BOOL):
+        try:
+            return self.plc.read_by_name(symbol_name, plc_type)
+        except pyads.ADSError as e:
+            self.logger.error(f"Reading {symbol_name} with datatype {plc_type} return error {e}")
+            return None
+    
+
+    def write_variable(self, symbol_name, value, plc_type=pyads.PLCTYPE_BOOL):
+        try:
+            self.plc.write_by_name(symbol_name, value, plc_type)
+        except pyads.ADSError as e:
+            self.logger.error(f"Writing {symbol_name} with value {value} and Datatype {plc_type} return error {e}")
+    

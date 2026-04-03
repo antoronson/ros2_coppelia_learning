@@ -3,7 +3,7 @@ import pathlib
 from datetime import datetime
 
 class PLCLogger:
-    def __init__(self):
+    def __init__(self, name = "System"):
         # 1. Define paths (Parent directory > logs folder)
         base_path = pathlib.Path(__file__).parent.parent
         log_dir = base_path / "log"
@@ -16,13 +16,13 @@ class PLCLogger:
         log_file = log_dir / f"{today}.log"
         
         # 4. Setup the logging configuration
-        self.logger = logging.getLogger("TwinCAT_Logger")
+        self.logger = logging.getLogger(name)
         self.logger.setLevel(logging.DEBUG)
         
         # Prevent duplicate logs if the class is instantiated multiple times
         if not self.logger.handlers:
             formatter = logging.Formatter(
-                '%(asctime)s | %(levelname)-8s | %(message)s', 
+                '%(asctime)s | %(levelname)-8s | %(name)-12s | %(message)s', 
                 datefmt='%H:%M:%S'
             )
             

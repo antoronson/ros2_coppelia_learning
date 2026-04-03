@@ -1,54 +1,55 @@
 import pytest
 import pyads
-from py_src.plc_connector import plc_connector
 from py_src.logger import PLCLogger
+from py_src.plc_connector import plc_connector
 
+
+## Pytest Fixture to handle all mocking
 @pytest.fixture
-def mock_plc_env():
-    with patch('py_src.logger.PLCLogger') as MockLogger, patch('pyads.Connection') as Mockconn:
-        mock_conn_inst = Mockconn.return_value
-        connector = plc_connector("192.168.2.137.1.1", 851)
-        yield connector, mock_conn_inst, MockLogger.return_value
+def plc_logging_mocker(mocker):
+    mock_conn = mocker.patch("pyads.Connection", autospec=True)
+    mock_conn_inst = mock_conn.return_value
+    mock_logger = mocker.patch("py_src.plc_connector.PLCLogger", autospec = True)
+    mock_logger_inst = mock_logger.return_value
 
-    
-def test_initialization(mock_plc_env):
-    "Verify init setups pyads object but doesnt open it yet"
-    connector, mock_conn, _ = mock_plc_env
-    assert connector.plc is not None
-    mock_conn.open.assert_not_called()
+    connect_obj = plc_connector("192.168.1.1", 852)
 
-def test_connection_success(mock_plc_env):
-    "verify connect triggers pyads open method"
-    connector, mock_conn, _ = mock_plc_env
-    connector.connect()
-    mock_conn.open.assert_called_once()
+    return connect_obj, mock_conn_inst, mock_logger_inst
 
-def test_is_connected_true(mock_plc_env):
-    """Verify is_connected returns True when PLC state is RUN (5)."""
-    connector, mock_conn, _ = mock_plc_env
-    
-    # Mock the return value of read_state (ads_state, device_state)
-    # Note: Ensure you fixed the typo ADSSRARE_RUN to ADSSTATE_RUN in your class!
+###################
+# Tests
+##################
+def test_initialization(plc_logging_mocker):
+    conn_obj, mock_conn, _ = plc_logging_mocker
+    assert conn_obj.plc is not None
+    mock_conn.open.assert_not_called()  # At this point the connection is not called
+
+
+def test_connect(plc_logging_mocker):
+    conn_obj, mock_conn, _ = plc_logging_mocker
+    conn_obj.connect()
+    mock_conn.open.assert_called_once()  
+
+def test_is_connected_true(plc_logging_mocker):
+    conn_obj, mock_conn, _ = plc_logging_mocker
     mock_conn.read_state.return_value = (pyads.ADSSTATE_RUN, 0)
-    
-    assert connector.is_connected is True
+    assert conn_obj.is_connected is True
 
-def test_is_connected_false_on_ads_error(mock_plc_env):
-    """Verify is_connected handles ADS errors (like timeout) gracefully."""
-    connector, mock_conn, mock_logger = mock_plc_env
-    
-    # Simulate a 'Target Not Found' or 'Timeout' error
+def test_is_connected_false_on_ads_error(plc_logging_mocker):
+    conn_obj, mock_conn, mock_logger = plc_logging_mocker
     mock_conn.read_state.side_effect = pyads.ADSError(1808)
-    
-    assert connector.is_connected is False
-    # Check if the error was logged
+    assert conn_obj.is_connected is False
     mock_logger.error.assert_called()
 
-def test_connect_exception_handling(mock_plc_env):
-    """Verify that if .open() crashes, the error is logged."""
-    connector, mock_conn, mock_logger = mock_plc_env
-    
-    mock_conn.open.side_effect = Exception("Socket closed by remote host")
-    
-    connector.connect()
-    mock_logger.error.assert_any_call("Failed opening connection to plc socket")
+def test_connect_exception_handling(plc_logging_mocker):
+    conn_obj, mock_conn, mock_logger = plc_logging_mocker
+    mock_conn.open.side_effect = Exception("Socket closed by remote")
+    conn_obj.connect()
+    mock_logger.error.assert_any_call("Failed opening connection to PLC Socket closed by remote")
+
+def test_read_from_plc(plc_logging_mocker):
+    Conn_obj, mock_conn, _ = plc_logging_mocker
+    mock_conn.read_by_name.return_value = True
+    val = Conn_obj.read_variable("MAIN.mbData", pyads.PLCTYPE_BOOL)
+    assert val is True
+    mock_conn.read_by_name.assert_called_with("MAIN.mbData", pyads.PLCTYPE_BOOL)  
