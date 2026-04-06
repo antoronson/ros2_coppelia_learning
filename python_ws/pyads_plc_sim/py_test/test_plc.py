@@ -1,7 +1,7 @@
 import pytest
 import pyads
-from py_src.logger import PLCLogger
-from py_src.plc_connector import plc_connector
+from python_ws.pyads_plc_sim.py_src.logger import PLCLogger
+from python_ws.pyads_plc_sim.py_src.plc_connector import plc_connector
 
 
 ## Pytest Fixture to handle all mocking

@@ -1,5 +1,5 @@
 import pyads
-from logger import PLCLogger
+from python_ws.pyads_plc_sim.py_src.logger import PLCLogger
 
 TARGET_AMS_ID = '192.168.2.137.1.1' # Link the ams id of the twincat plc
 TARGET_PORT   = pyads.PORT_TC3PLC1
