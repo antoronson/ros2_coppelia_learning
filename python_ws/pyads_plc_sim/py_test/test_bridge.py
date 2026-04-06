@@ -1,5 +1,3 @@
-from typing import Callable
-
 import pytest
 from pytest_mock.plugin import _mocker
 from python_ws.pyads_plc_sim.py_src.plc_sim_bridge import PlcSimBridge

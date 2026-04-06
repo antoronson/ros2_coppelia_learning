@@ -22,20 +22,52 @@ class plc_connector:
         except Exception as e:
             self.logger.error(f"Failed opening connection to PLC {e}")
 
+    def disconnect_plc(self):
+        try:
+            self.plc.close()
+        except Exception as e:
+            self.logger.error(f"Failed closing connection to plc {e}")
     
     def _connection_watchdog(self):
         while not self._stop_watchdog.is_set():
-            try:
-                self.isAlive = self.is_connected
-            except Exception:
-                self.isAlive = False
-            
-            time.sleep(0.5)
+            plc_is_connected    = self.is_connected
+            if not plc_is_connected:
+                self.logger.warn("PLC Connection lost. Attempting to reconnect")
+                try:
+                    self.disconnect_plc()
+                    time.sleep(0.1)
+                    self.connect()
+                    if self.is_connected:
+                        self.isAlive = True
+                    else:
+                        self.isAlive = False
+                    #time.sleep(0.1)
+                except Exception as e:
+                    self.isAlive = False
+                    self.logger.error(f"Watchdog Error {e}")
+            else:
+                self.isAlive = True 
+                time.sleep(0.1)
+
+
+            time.sleep(1)
 
     @property
     def is_connected(self):
+        if self.plc is None:
+            return False
+
+        if self.plc.is_open is None:
+            return False
         try:
-            state, _ = self.plc.read_state()
+            if not self.plc.is_open:
+                return False
+            
+            result = self.plc.read_state()
+
+            if result is None:
+                return False
+            state,_ = result
             return state in [pyads.ADSSTATE_RUN, pyads.ADSSTATE_CONFIG]
         except (pyads.ADSError, AttributeError) as e:
             self.logger.error(f"connecting pyads to twincat faces ads error {e}")

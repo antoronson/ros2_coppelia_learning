@@ -35,7 +35,7 @@ class PlcSimBridge:
     def read_from_plc(self):
         self.logger.info("Reading from PLC")
         if self.plc.isAlive:
-            for key, config in self.signals.MAPPING_PLC_INPUTS.items():
+            for key, config in self.signals.MAPPING_PLC_OUTPUTS.items():
                 try:
                     val = self.plc.read_variable(config["plc"], config["type"])
                     self.io_data[key] = val
@@ -47,7 +47,7 @@ class PlcSimBridge:
     def write_to_plc(self):
         self.logger.info("Writing to PLC")
         if self.plc.isAlive:
-            for key, config in self.signals.MAPPING_PLC_OUTPUTS.items():
+            for key, config in self.signals.MAPPING_PLC_INPUTS.items():
                 if key in self.io_data:
                     val = self.io_data.get(key)
                     if val is not None:
