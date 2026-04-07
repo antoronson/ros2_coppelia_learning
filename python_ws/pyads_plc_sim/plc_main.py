@@ -7,6 +7,9 @@ def main():
     try:
         while True:
             sim_bridge.run_step()
+            for key, value in sim_bridge.io_data:
+                value = sim_bridge.io_data["key"]
+                print(f"Key = {key}, Value = {value}")
             time.sleep(0.1)
     except KeyboardInterrupt:
         print("Shutting down Bridge")
