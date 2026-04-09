@@ -1,0 +1,13 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Run plc_main",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "pyads_plc_sim.plc_main",
+            "cwd": "${workspaceFolder}/python_ws",
+            "justMyCode": true
+        }
+    ]
+}
