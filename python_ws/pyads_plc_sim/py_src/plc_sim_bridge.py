@@ -20,12 +20,38 @@ class PlcSimBridge:
         self.output_data = {}
         self.input_keys = list(self.signals.MAPPING_PLC_INPUTS.keys())
         self.output_keys = list(self.signals.MAPPING_PLC_OUTPUTS.keys())
-        for key in self.input_keys:
-            self.logger.info(f"Input Key: {key}")
+        for key, config in self.signals.MAPPING_PLC_INPUTS:
+            # self.logger.info(f"Input Key: {key}")
+            config["handle"] = self.get_var_handle(config["plc"])
             self.input_data[key] = None
-        for key in self.output_keys:
-            self.logger.info(f"Output Key: {key}")
+
+        for key, config in self.signals.MAPPING_PLC_OUTPUTS:
+            # self.logger.info(f"Output Key: {key}")
             self.output_data[key] = None
+            config["handle"] = self.get_var_handle(config["plc"])
+
+    #############################
+    # Get handle of the var
+    #############################
+    def get_var_handle(self, var_name):
+        if not self.plc.isAlive:
+            self.logger.error(
+                f"Error While reading handle  of var {var_name}. PLC is not alive")
+            return None
+        return (self.plc.get_handle(var_name))
+
+    #############################
+    # Release PLC handle
+    #############################
+    def release_plc_handle(self):
+        for key, config in self.signals.MAPPING_PLC_INPUTS:
+            if config["handle"] is not None:
+                self.plc.release_handle(config["handle"])
+                config["handle"] = None
+    #############################
+    # Wait for PLC to autoconnect
+    # from the watchdog
+    ##############################
 
     def wait_for_plc(self):
         """Wait until the watchdog establishes connection."""

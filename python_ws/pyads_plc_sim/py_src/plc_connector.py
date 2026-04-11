@@ -81,6 +81,20 @@ class plc_connector:
                 f"connecting pyads to twincat faces ads error {e}")
             return False
 
+    def read_by_handle(self, handle, plc_type=pyads.PLCTYPE_BOOL):
+        try:
+            return (self.plc.read_by_name('', plc_type, handdle=handle))
+        except pyads.ADSError as e:
+            self.logger.error(
+                f"Reading {handle}, with datatype {plc_type} return error: {e}")
+
+     def write_to_handle(self, handle,value, plc_type=pyads.PLCTYPE_BOOL):
+        try:
+            return (self.plc.write_by_name('', value, plc_type, handle=handle))
+        except pyads.ADSError as e:
+            self.logger.error(
+                f"Reading {handle}, with datatype {plc_type} return error: {e}")
+            
     def read_variable(self, symbol_name, plc_type=pyads.PLCTYPE_BOOL):
         try:
             return self.plc.read_by_name(symbol_name, plc_type)
