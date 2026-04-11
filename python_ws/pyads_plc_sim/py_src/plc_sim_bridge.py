@@ -66,7 +66,8 @@ class PlcSimBridge:
         if self.plc.isAlive:
             for key, config in self.signals.MAPPING_PLC_OUTPUTS.items():
                 try:
-                    val = self.plc.read_variable(config["plc"], config["type"])
+                    val = self.plc.read_by_handle(
+                        config["handle"], config["type"])
                     self.output_data[key] = val
                 except Exception as e:
                     self.logger.error(f"Failed to sync input {key}: {e}")
@@ -80,8 +81,8 @@ class PlcSimBridge:
                 val = self.input_data.get(key)
                 if val is not None:
                     try:
-                        self.plc.write_variable(
-                            config["plc"], val, config["type"])
+                        self.plc.write_to_handle(
+                            config["handle"], val, config["type"])
                     except Exception as e:
                         self.logger.error(f"Failed to write output {key}: {e}")
                 else:
