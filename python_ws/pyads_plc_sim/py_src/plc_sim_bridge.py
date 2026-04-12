@@ -20,12 +20,12 @@ class PlcSimBridge:
         self.output_data = {}
         self.input_keys = list(self.signals.MAPPING_PLC_INPUTS.keys())
         self.output_keys = list(self.signals.MAPPING_PLC_OUTPUTS.keys())
-        for key, config in self.signals.MAPPING_PLC_INPUTS:
+        for key, config in self.signals.MAPPING_PLC_INPUTS.items():
             # self.logger.info(f"Input Key: {key}")
             config["handle"] = self.get_var_handle(config["plc"])
             self.input_data[key] = None
 
-        for key, config in self.signals.MAPPING_PLC_OUTPUTS:
+        for key, config in self.signals.MAPPING_PLC_OUTPUTS.items():
             # self.logger.info(f"Output Key: {key}")
             self.output_data[key] = None
             config["handle"] = self.get_var_handle(config["plc"])
@@ -34,11 +34,7 @@ class PlcSimBridge:
     # Get handle of the var
     #############################
     def get_var_handle(self, var_name):
-        if not self.plc.isAlive:
-            self.logger.error(
-                f"Error While reading handle  of var {var_name}. PLC is not alive")
-            return None
-        return (self.plc.get_handle(var_name))
+        return self.plc.get_symbol_handle(var_name)
 
     #############################
     # Release PLC handle
